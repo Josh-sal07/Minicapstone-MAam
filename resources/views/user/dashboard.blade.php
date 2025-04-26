@@ -1,238 +1,226 @@
 @extends('layouts.user')
 @section('title', 'User Dashboard')
 @section('content')
-<div class="chat-dashboard-container">
-    <div class="chat-header">
-        <h1>Welcome, {{ auth()->user()->name }}!</h1>
-        <p class="status-indicator">Online</p>
-    </div>
-
-    <div class="dashboard-summary">
-        <div class="info-card">
-            <div class="info-icon">📋</div>
-            <div class="info-content">
-                <h3>Active Repairs</h3>
-                <p class="count">{{ $activeRepairs ?? 0 }}</p>
-            </div>
-        </div>
-        <div class="info-card">
-            <div class="info-icon">🔔</div>
-            <div class="info-content">
-                <h3>Notifications</h3>
-                <p class="count">{{ $unreadNotifications ?? 0 }}</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="action-cards">
-        <div class="action-card">
-            <h3>Book a Repair</h3>
-            <p>Schedule a repair for your device with our certified technicians</p>
-            <a href="{{ route('user.bookings') ?? '#' }}" class="action-button">Book Now</a>
-        </div>
-        <div class="action-card">
-            <h3>Track Repairs</h3>
-            <p>Check the status of your ongoing repair requests</p>
-            <a href="{{ route('user.bookings') ?? '#' }}" class="action-button">View Status</a>
-        </div>
-    </div>
-
-    <div class="recent-messages">
-        <h2>Recent Messages</h2>
-        @if(isset($recentMessages) && count($recentMessages) > 0)
-            <div class="messages-list">
-                @foreach($recentMessages as $message)
-                <div class="message-preview">
-                    <div class="message-avatar">
-                        <div class="avatar-placeholder">{{ substr($message->sender_name ?? 'T', 0, 1) }}</div>
-                    </div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <span class="sender-name">{{ $message->sender_name ?? 'Technician' }}</span>
-                            <span class="message-time">{{ $message->created_at->diffForHumans() ?? 'Recently' }}</span>
-                        </div>
-                        <p class="message-text">{{ $message->content ?? 'Your repair is in progress.' }}</p>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        @else
-            <div class="empty-messages">
-                <p>No recent messages</p>
-                <span>When technicians update you about your repairs, messages will appear here</span>
-            </div>
-        @endif
-    </div>
-
-    <div class="quick-support">
-        <h2>Need Help?</h2>
-        <a href="{{ route('user.help') ?? '#' }}" class="support-button">
-            <span class="support-icon">💬</span>
-            <span>Chat with Support</span>
-        </a>
-    </div>
-</div>
-
 <style>
-    .chat-dashboard-container {
-        max-width: 900px;
+    :root {
+        --primary: #4361ee;
+        --primary-dark: #3a56d4;
+        --secondary: #3f37c9;
+        --accent: #4cc9f0;
+        --light: #f8f9fa;
+        --dark: #212529;
+        --success: #4bb543;
+        --warning: #f8961e;
+        --danger: #f94144;
+        --gray: #6c757d;
+        --light-gray: #e9ecef;
+    }
+
+    .dashboard-container {
+        max-width: 1200px;
         margin: 0 auto;
-        padding: 20px;
+        padding: 2rem;
     }
 
-    .chat-header {
+    .dashboard-header {
         display: flex;
-        align-items: baseline;
         justify-content: space-between;
-        margin-bottom: 25px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid #eee;
+        align-items: center;
+        margin-bottom: 2rem;
     }
 
-    .chat-header h1 {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #333;
+    .dashboard-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--dark);
         margin: 0;
     }
 
-    .status-indicator {
-        color: #4CAF50;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
+    .dashboard-title span {
+        color: var(--primary);
     }
 
-    .status-indicator:before {
+    .status-indicator {
+        display: flex;
+        align-items: center;
+        font-size: 0.9rem;
+        color: var(--success);
+    }
+
+    .status-indicator::before {
         content: '';
         display: inline-block;
         width: 8px;
         height: 8px;
-        background-color: #4CAF50;
+        background-color: var(--success);
         border-radius: 50%;
         margin-right: 6px;
     }
 
-    .dashboard-summary {
-        display: flex;
-        margin-bottom: 25px;
-        gap: 20px;
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
     }
 
-    .info-card {
-        flex: 1;
+    .stat-card {
+        background-color: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-header {
         display: flex;
         align-items: center;
-        padding: 20px;
-        background-color: #f8f9fa;
-        border-radius: 10px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        margin-bottom: 1rem;
     }
 
-    .info-icon {
-        font-size: 1.8rem;
-        margin-right: 15px;
-    }
-
-    .info-content h3 {
-        margin: 0;
-        font-size: 0.9rem;
-        color: #666;
-    }
-
-    .info-content .count {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #4a76a8;
-        margin: 5px 0 0 0;
-    }
-
-    .action-cards {
-        display: flex;
-        gap: 20px;
-        margin-bottom: 30px;
-    }
-
-    .action-card {
-        flex: 1;
-        background-color: white;
-        border-radius: 10px;
-        padding: 25px;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-        transition: transform 0.2s;
-    }
-
-    .action-card:hover {
-        transform: translateY(-3px);
-    }
-
-    .action-card h3 {
-        margin: 0 0 10px 0;
-        font-size: 1.1rem;
-        font-weight: bold;
-        color: #333;
-    }
-
-    .action-card p {
-        color: #666;
-        margin-bottom: 20px;
-        font-size: 0.95rem;
-    }
-
-    .action-button {
-        display: inline-block;
-        padding: 10px 20px;
-        background-color: #4a76a8;
-        color: white;
-        text-decoration: none;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        transition: background-color 0.2s;
-    }
-
-    .action-button:hover {
-        background-color: #3d6293;
-    }
-
-    .recent-messages {
-        background-color: white;
-        border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 30px;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-    }
-
-    .recent-messages h2 {
-        font-size: 1.1rem;
-        margin: 0 0 15px 0;
-        color: #333;
-    }
-
-    .messages-list {
-        max-height: 300px;
-        overflow-y: auto;
-    }
-
-    .message-preview {
-        display: flex;
-        padding: 15px 0;
-        border-bottom: 1px solid #f0f0f0;
-    }
-
-    .message-avatar {
-        margin-right: 15px;
-    }
-
-    .avatar-placeholder {
+    .stat-icon {
         width: 40px;
         height: 40px;
-        background-color: #e3f2fd;
-        border-radius: 50%;
+        border-radius: 8px;
+        background-color: rgba(67, 97, 238, 0.1);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: bold;
-        color: #4a76a8;
+        margin-right: 1rem;
+        color: var(--primary);
+        font-size: 1.2rem;
+    }
+
+    .stat-title {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--gray);
+        margin: 0;
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin: 0;
+    }
+
+    .action-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .action-card {
+        background-color: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .action-card h3 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--dark);
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+    }
+
+    .action-card p {
+        color: var(--gray);
+        margin-bottom: 1.5rem;
+        font-size: 0.95rem;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.6rem 1.5rem;
+        background-color: var(--primary);
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+    }
+
+    .action-btn i {
+        margin-right: 0.5rem;
+    }
+
+    .messages-section {
+        background-color: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        margin-bottom: 2rem;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--dark);
+        margin: 0;
+    }
+
+    .view-all {
+        color: var(--primary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .messages-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .message-item {
+        display: flex;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--light-gray);
+    }
+
+    .message-item:last-child {
+        border-bottom: none;
+    }
+
+    .message-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: rgba(67, 97, 238, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+        font-weight: 600;
+        margin-right: 1rem;
+        flex-shrink: 0;
     }
 
     .message-content {
@@ -242,86 +230,143 @@
     .message-header {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 5px;
+        margin-bottom: 0.5rem;
     }
 
-    .sender-name {
-        font-weight: 500;
-        color: #333;
+    .message-sender {
+        font-weight: 600;
+        color: var(--dark);
     }
 
     .message-time {
         font-size: 0.8rem;
-        color: #999;
+        color: var(--gray);
     }
 
     .message-text {
-        color: #666;
-        margin: 0;
+        color: var(--gray);
         font-size: 0.95rem;
-        line-height: 1.4;
+        line-height: 1.5;
     }
 
-    .empty-messages {
-        padding: 30px 0;
+    .empty-state {
         text-align: center;
-        color: #999;
+        padding: 2rem;
+        color: var(--gray);
     }
 
-    .empty-messages p {
-        font-size: 1.1rem;
-        margin: 0 0 5px 0;
+    .empty-state p {
+        margin-bottom: 0.5rem;
     }
 
-    .empty-messages span {
-        font-size: 0.9rem;
+    .empty-state .empty-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        color: var(--light-gray);
     }
 
-    .quick-support {
-        background-color: #f8f9fa;
-        border-radius: 10px;
-        padding: 20px;
+    .support-section {
+        background-color: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         text-align: center;
     }
 
-    .quick-support h2 {
-        font-size: 1.1rem;
-        margin: 0 0 15px 0;
-        color: #333;
-    }
-
-    .support-button {
+    .support-btn {
         display: inline-flex;
         align-items: center;
-        padding: 12px 25px;
-        background-color: #4a76a8;
+        padding: 0.8rem 2rem;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
         color: white;
+        border-radius: 8px;
         text-decoration: none;
-        border-radius: 25px;
-        font-size: 0.95rem;
-        transition: background-color 0.2s, transform 0.2s;
+        font-weight: 500;
+        transition: all 0.3s ease;
     }
 
-    .support-button:hover {
-        background-color: #3d6293;
-        transform: scale(1.05);
+    .support-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(67, 97, 238, 0.3);
     }
 
-    .support-icon {
+    .support-btn i {
+        margin-right: 0.5rem;
         font-size: 1.2rem;
-        margin-right: 8px;
     }
 
+    /* Responsive Design */
     @media (max-width: 768px) {
-        .dashboard-summary,
-        .action-cards {
-            flex-direction: column;
+        .dashboard-container {
+            padding: 1.5rem;
         }
 
-        .info-card,
-        .action-card {
-            margin-bottom: 15px;
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .status-indicator {
+            margin-top: 0.5rem;
         }
     }
 </style>
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">Welcome, <span>{{ auth()->user()->name }}</span>!</h1>
+        <div class="status-indicator">Online</div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <h4 class="stat-title">Active Repairs</h4>
+            </div>
+            <p class="stat-value">{{ $activeRepairs ?? 0 }}</p>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <a href="{{ route('user.notifications') }}">
+                    <h4 class="stat-title">Notifications</h4>
+                </a>
+                
+            </div>
+            <p class="stat-value">{{ $unreadNotifications ?? 0 }}</p>
+        </div>
+    </div>
+
+    <div class="action-grid">
+        <div class="action-card">
+            <h3>Book a Repair</h3>
+            <p>Schedule a repair for your device with our certified technicians</p>
+            <a href="{{ route('user.bookings') ?? '#' }}" class="action-btn">
+                <i class="fas fa-calendar-plus"></i> Book Now
+            </a>
+        </div>
+        
+        <div class="action-card">
+            <h3>Track Repairs</h3>
+            <p>Check the status of your ongoing repair requests</p>
+            <a href="{{ route('user.bookings') ?? '#' }}" class="action-btn">
+                <i class="fas fa-search"></i> View Status
+            </a>
+        </div>
+    </div>
+
+    <div class="support-section">
+        <h2 class="section-title">Need Help?</h2>
+        <p>Our support team is available 24/7 to assist you</p>
+        <a href="{{ route('user.help') ?? '#' }}" class="support-btn">
+            <i class="fas fa-comment-dots"></i> Chat with Support
+        </a>
+    </div>
+</div>
 @endsection

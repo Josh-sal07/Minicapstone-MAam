@@ -51,12 +51,6 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('admin.reports') }}" class="flex items-center px-4 py-3 rounded-lg hover:bg-blue-800 transition-colors duration-200">
-                                <i class="fas fa-chart-bar mr-3 w-6 text-center"></i>
-                                <span>Reports</span>
-                            </a>
-                        </li>
-                        <li>
                             <a href="{{ route('admin.settings') }}" class="flex items-center px-4 py-3 rounded-lg hover:bg-blue-800 transition-colors duration-200">
                                 <i class="fas fa-cogs mr-3 w-6 text-center"></i>
                                 <span>System Settings</span>
@@ -68,12 +62,7 @@
                                 <span>Notifications</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="{{ route('admin.messages') }}" class="flex items-center px-4 py-3 rounded-lg hover:bg-blue-800 transition-colors duration-200">
-                                <i class="fas fa-envelope mr-3 w-6 text-center"></i>
-                                <span>Messages</span>
-                            </a>
-                        </li>
+        
                     </ul>
                 </nav>
             </div>

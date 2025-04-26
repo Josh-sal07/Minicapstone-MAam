@@ -1,47 +1,47 @@
 @extends('layouts.technician')
-@section('header','Upcoming Repairs')
+
+@section('header', 'Upcoming Repairs')
 
 @section('content')
-    <div class="container">
-        <h2>Upcoming Repairs</h2>
+    <h1 class="text-2xl font-bold mb-4">Upcoming Repairs</h1>
 
-        @if($bookings->isEmpty())
-            <div class="alert alert-warning">You have no upcoming repairs at the moment.</div>
-        @else
-            <table class="table table-striped">
-                <thead>
+    @if($bookings->count())
+        <div class="bg-white p-4 shadow rounded">
+            <table class="table-auto w-full border">
+                <thead class="bg-gray-100">
                     <tr>
-                        <th>Repair ID</th>
-                        <th>Customer Name</th>
-                        <th>Scheduled Date</th>
-                        <th>Status</th>
-                        <th>Action</th>
+                        <th class="p-2">User</th>
+                        <th class="p-2">Device</th>
+                        <th class="p-2">Issue</th>
+                        <th class="p-2">Status</th>
+                        <th class="p-2">Updated</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($bookings as $repair)
-                        <tr>
-                            <td>{{ $repair->id }}</td>
-                            <td>{{ $repair->customer->name }}</td> <!-- Assuming a relationship exists between Repair and Customer -->
-                            <td>{{ \Carbon\Carbon::parse($repair->scheduled_date)->format('M d, Y h:i A') }}</td>
-                            <td>
-                                @if($repair->status == 'scheduled')
-                                    <span class="badge bg-info">Scheduled</span>
-                                @elseif($repair->status == 'in_progress')
-                                    <span class="badge bg-warning">In Progress</span>
-                                @elseif($repair->status == 'completed')
-                                    <span class="badge bg-success">Completed</span>
-                                @else
-                                    <span class="badge bg-secondary">N/A</span>
-                                @endif
-                            </td>
-                            <td>
-                                <a href="{{ route('repair.details', $repair->id) }}" class="btn btn-primary btn-sm">View Details</a>
-                            </td>
+                    @foreach($bookings as $booking)
+                        <tr class="border-t">
+                            <td class="p-2">{{ $booking->user->name }}</td>
+                            <td class="p-2">{{ $booking->device }}</td>
+                            <td class="p-2">{{ $booking->issue }}</td>
+                            <td class="p-2 capitalize">{{ $booking->status }}</td>
+                            <td class="p-2">{{ $booking->updated_at->diffForHumans() }}</td>
                         </tr>
+                        <td class="p-2">
+                            @if ($booking->status !== 'completed')
+                            <a href="{{ route('technician.bookings.completed', ['booking' => $booking->id]) }}?status=completed" class="btn btn-primary">Mark as Completed</a>
+
+                            
+                            @else
+                                <span class="text-gray-500 italic">Completed</span>
+                            @endif
+                        </td>
                     @endforeach
+                   
+                    
                 </tbody>
             </table>
-        @endif
-    </div>
+        </div>
+    @else
+        <p class="text-gray-500">No accepted repairs available at the moment.</p>
+    @endif
 @endsection

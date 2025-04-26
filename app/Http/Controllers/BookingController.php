@@ -6,6 +6,7 @@ use App\Models\Booking;
 use Illuminate\Http\Request;
 use App\Notifications\BookingStatusUpdated;
 use App\Models\User;
+use App\Models\Technician;
 
 class BookingController extends Controller
 {
@@ -101,5 +102,41 @@ class BookingController extends Controller
         return back()->with('success', 'Booking status updated.');
     }
 
+    public function edit($id)
+    {
+        $booking = Booking::findOrFail($id);
+        $technicians = Technician::all(); // Get all technicians for the dropdown
+        return view('user.bookings.edit', compact('booking', 'technicians'));
+    }
+
+    // Update the specified booking in storage
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'device' => 'required|string|max:255',
+            'technician_id' => 'required|exists:technicians,id',
+            'payment_method' => 'required|string',
+            'issue' => 'required|string|max:500',
+        ]);
+
+        $booking = Booking::findOrFail($id);
+        $booking->update([
+            'device' => $request->device,
+            'technician_id' => $request->technician_id,
+            'payment_method' => $request->payment_method,
+            'issue' => $request->issue,
+        ]);
+
+        return redirect()->route('user.bookings')->with('success', 'Booking updated successfully.');
+    }
+
+    // Delete the specified booking
+    public function destroy($id)
+    {
+        $booking = Booking::findOrFail($id);
+        $booking->delete();
+
+        return redirect()->route('user.bookings')->with('success', 'Booking deleted successfully.');
+    }
 
 }

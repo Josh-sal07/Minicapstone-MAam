@@ -19,6 +19,7 @@ use App\Http\Controllers\{
     AdminDashboardController,
     UserDashboardController,
     TechnicianDashboardController,
+    TechnicianBookingController,
     Admin\ReportController,
     Admin\SettingsController
 };
@@ -78,6 +79,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/messages', [MessageController::class, 'userMessage'])->name('messages');
         Route::get('/help', [HelpController::class, 'index'])->name('help');
         Route::get('/notifications', [NotificationController::class, 'uindex'])->name('notifications');
+       
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     });
 
@@ -98,6 +100,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/profile', [TechnicianController::class, 'profile'])->name('profile');
         Route::get('/technician/profile', [TechnicianController::class, 'editProfile'])->name('technician.profile');
         Route::post('/technician/profile', [TechnicianController::class, 'updateProfile'])->name('technician.profile.update');
+      
+
     });
 
     // --------------------
@@ -151,3 +155,35 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
 
 
 
+
+Route::middleware(['auth'])->prefix('technician')->name('technician.')->group(function () {
+    Route::patch('/bookings/{booking}/status', [TechnicianBookingController::class, 'updateStatus'])->name('bookings.updateStatus');
+});
+
+Route::get('/technician/bookings', [TechnicianController::class, 'bookings'])->name('technician.bookings');
+Route::get('/technician/bookings/upcoming', [TechnicianController::class, 'upcomingRepairs'])->name('technician.bookings.upcoming');
+
+Route::get('/user/change-password', [UserController::class, 'changePassword'])->name('user.account.change-password');
+Route::put('/user/change-password', [UserController::class, 'updatePassword'])->name('user.account.change-password.update');
+
+
+Route::prefix('user')->middleware(['auth', 'role:user'])->group(function () {
+    Route::get('bookings', [BookingController::class, 'index'])->name('user.bookings');
+    Route::get('bookings/{booking}/edit', [BookingController::class, 'edit'])->name('user.bookings.edit');
+    Route::put('bookings/{booking}', [BookingController::class, 'update'])->name('user.bookings.update');
+    Route::delete('bookings/{booking}', [BookingController::class, 'destroy'])->name('user.bookings.destroy');
+});
+
+
+Route::middleware(['auth', 'role:technician'])->group(function () {
+    Route::post('/technician/bookings/{booking}/update-status/{status}', [TechnicianController::class, 'updateBookingStatus'])
+        ->name('technician.updateBookingStatus');
+});
+
+
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/technicians/pending', [AdminController::class, 'pendingTechnicians'])->name('admin.technicians.pending');
+    Route::post('/admin/technicians/{id}/approve', [AdminController::class, 'approveTechnician'])->name('admin.technicians.approve');
+    Route::post('/admin/technicians/{id}/reject', [AdminController::class, 'rejectTechnician'])->name('admin.technicians.reject');
+});

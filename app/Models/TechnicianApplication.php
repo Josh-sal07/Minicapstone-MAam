@@ -9,11 +9,15 @@ class TechnicianApplication extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'qualifications', 'status'];
+    protected $fillable = ['user_id', 'skills', 'experience', 'status'];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    } 
+
+    public function admin(){
+        return $this->belongsto(User::class, 'admin_id');
     }
 }
 

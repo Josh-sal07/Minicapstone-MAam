@@ -36,23 +36,41 @@ class UserSeeder extends Seeder
         ]);
         $user->assignRole('user');
 
-        // Technician User
-        $technicianUser = User::firstOrCreate([
-            'email' => 'tech@example.com',
-        ], [
-            'name' => 'Tech User',
-            'password' => Hash::make('password'),
-        ]);
-        $technicianUser->assignRole('technician');
+        // Technician Users
+        $technicians = [
+            [
+                'name' => 'Tech 1',
+                'email' => 'tech1@example.com',
+            ],
+            [
+                'name' => 'Tech 2',
+                'email' => 'tech2@example.com',
+            ],
+            [
+                'name' => 'Tech 3',
+                'email' => 'tech3@example.com',
+            ],
+        ];
+        
+        foreach ($technicians as $tech) {
+            $user = User::firstOrCreate(
+                ['email' => $tech['email']],
+                [
+                    'name' => $tech['name'],
+                    'password' => Hash::make('password'), // Set a secure password
+                ]
+            );
+            $user->assignRole('technician');
 
-        // Technician Profile (linked)
-        Technician::firstOrCreate([
-            'user_id' => $technicianUser->id,
-        ], [
-            'name' => $technicianUser->name,
-            'email' => $technicianUser->email,
-            'approved' => true,
-        ]);
+            // Create linked technician profile
+            Technician::firstOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'approved' => true,
+                ]
+            );
+        }
     }
-
 }

@@ -51,13 +51,14 @@
     .card-icon {
         font-size: 28px;
         color: #3c91e6;
+        
     }
 </style>
 
 <div class="admin-dashboard">
     <h1>Hello Admin</h1>
     <p>Manage technicians, view reports, and handle system settings from here.</p>
-
+    
     <div class="dashboard-cards">
 
         <div class="card">
@@ -68,15 +69,14 @@
 
         <div class="card">
             <div class="card-icon">👤</div>
+            <a href="{{ route('admin.users') }}">
             <h3>Manage Users</h3>
             <p>View and manage registered customers.</p>
+        </a>
         </div>
+        
 
-        <div class="card">
-            <div class="card-icon">🛠️</div>
-            <h3>View Bookings</h3>
-            <p>Track all repair requests and assignments.</p>
-        </div>
+    
 
         <div class="card">
             <div class="card-icon">📊</div>

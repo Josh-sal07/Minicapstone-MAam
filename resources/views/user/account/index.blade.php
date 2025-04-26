@@ -1,156 +1,202 @@
 @extends('layouts.user')
+@section('header', 'Account Settings')
 @section('content')
- <div class="chat-profile-container">
- <div class="chat-header">
-   <h2>Update Profile</h2>
- </div>
-
- <div class="chat-content">
-   @if(session('success'))
-     <div class="success-message">{{ session('success') }}</div>
-   @endif
-
-   <form method="POST" action="{{ route('user.account') }}">
-     @csrf
-     <div class="form-group">
-       <label for="name">Name</label>
-       <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}" required>
-       @error('name') <div class="error-message">{{ $message }}</div> @enderror
-     </div>
-
-     <div class="form-group">
-       <label for="email">Email</label>
-       <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}" required>
-       @error('email') <div class="error-message">{{ $message }}</div> @enderror
-     </div>
-
-     <button type="submit" class="update-button">Update Profile</button>
-   </form>
-
-   <div class="action-links">
-     <a href="{{ route('user.account') }}" class="change-password">Change Password</a>
-   </div>
- </div>
- </div>
-@endsection
-
-@push('styles')
 <style>
-/* Container Styling */
-.chat-profile-container {
-  max-width: 600px;
-  margin: 40px auto;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-}
+    :root {
+        --primary: #4361ee;
+        --primary-dark: #3a56d4;
+        --secondary: #3f37c9;
+        --accent: #4cc9f0;
+        --light: #f8f9fa;
+        --dark: #212529;
+        --success: #4bb543;
+        --warning: #f8961e;
+        --danger: #f94144;
+        --gray: #6c757d;
+        --light-gray: #e9ecef;
+    }
 
-/* Header */
-.chat-header {
-  background-color: #4a76a8;
-  color: white;
-  padding: 15px 20px;
-  text-align: center;
-}
+    .profile-container {
+        max-width: 600px;
+        margin: 2rem auto;
+    }
 
-.chat-header h2 {
-  margin: 0;
-  font-size: 1.2rem;
-  font-weight: 500;
-}
+    .profile-card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
 
-/* Content Area */
-.chat-content {
-  background-color: #fff;
-  padding: 25px;
-}
+    .profile-header {
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        color: white;
+        padding: 1.5rem;
+        text-align: center;
+    }
 
-/* Success Message */
-.success-message {
-  background-color: #e3f2fd;
-  color: #0d47a1;
-  padding: 12px 18px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  border-left: 4px solid #2196f3;
-  font-size: 0.95rem;
-}
+    .profile-header h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
 
-/* Form Groups */
-.form-group {
-  margin-bottom: 20px;
-}
+    .profile-content {
+        padding: 2rem;
+    }
 
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: #555;
-  font-size: 0.95rem;
-}
+    .success-message {
+        background-color: rgba(75, 181, 67, 0.1);
+        color: var(--success);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid var(--success);
+        font-size: 0.95rem;
+    }
 
-.form-group input {
-  width: 100%;
-  padding: 12px 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-  transition: border 0.2s, box-shadow 0.2s;
-}
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
 
-.form-group input:focus {
-  border-color: #4a76a8;
-  box-shadow: 0 0 0 3px rgba(74, 118, 168, 0.1);
-  outline: none;
-  background-color: #fff;
-}
+    .form-label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+    }
 
-/* Error Messages */
-.error-message {
-  color: #d32f2f;
-  font-size: 0.85rem;
-  margin-top: 6px;
-  padding-left: 4px;
-}
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--light-gray);
+        border-radius: 8px;
+        font-size: 1rem;
+        background-color: #f8f9fa;
+        transition: all 0.3s ease;
+    }
 
-/* Update Button */
-.update-button {
-  background-color: #4a76a8;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  padding: 12px 22px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  width: 100%;
-  margin-top: 10px;
-}
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        background-color: white;
+    }
 
-.update-button:hover {
-  background-color: #3d6293;
-}
+    .error-message {
+        color: var(--danger);
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
 
-/* Action Links */
-.action-links {
-  text-align: center;
-  margin-top: 20px;
-  padding-top: 15px;
-  border-top: 1px solid #eee;
-}
+    .update-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 0.8rem;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
 
-.change-password {
-  color: #4a76a8;
-  text-decoration: none;
-  font-size: 0.95rem;
-  font-weight: 500;
-  transition: color 0.2s;
-}
+    .update-btn:hover {
+        background: linear-gradient(90deg, var(--primary-dark), var(--secondary));
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(67, 97, 238, 0.3);
+    }
 
-.change-password:hover {
-  color: #3d6293;
-  text-decoration: underline;
-}
+    .update-btn i {
+        margin-right: 0.5rem;
+    }
+
+    .action-links {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--light-gray);
+        text-align: center;
+    }
+
+    .action-link {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .action-link:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+    }
+
+    .action-link i {
+        margin-right: 0.5rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .profile-container {
+            padding: 0 1.5rem;
+        }
+        
+        .profile-content {
+            padding: 1.5rem;
+        }
+    }
 </style>
-@endpush
+
+<div class="profile-container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <h2>Account Settings</h2>
+        </div>
+        
+        <div class="profile-content">
+            @if(session('success'))
+                <div class="success-message">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('user.account') }}">
+                @csrf
+                
+                <div class="form-group">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" id="name" name="name" class="form-control" 
+                           value="{{ old('name', $user->name) }}" required>
+                    @error('name')
+                        <div class="error-message">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" 
+                           value="{{ old('email', $user->email) }}" required>
+                    @error('email')
+                        <div class="error-message">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <button type="submit" class="update-btn">
+                    <i class="fas fa-save"></i> Update Profile
+                </button>
+            </form>
+
+            <div class="action-links">
+                <a href="{{ route('user.account.change-password') }}" class="action-link">
+                    <i class="fas fa-key"></i> Change Password
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

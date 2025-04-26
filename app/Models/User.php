@@ -73,4 +73,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Message::class, 'receiver_id');
     }
+
+    public function technicianApplication(){
+        return $this->hasOne(technicianApplication::class);
+    }
 }

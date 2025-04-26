@@ -28,7 +28,7 @@
                             <td class="px-6 py-3">{{ $user->email }}</td>
                             <td class="px-6 py-3">{{ $user->created_at->format('F d, Y') }}</td>
                             <td class="px-6 py-3 space-x-2">
-                                <a href="{{ route('admin.users.edit', $user->id) }}" class="text-blue-600 hover:underline">Edit</a>
+                              
 
                                 <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this user?');">
                                     @csrf

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('device');
             $table->text('issue');
-            $table->enum('status', ['pending', 'assigned', 'active', 'upcoming', 'completed'])->default('pending');
+            $table->enum('status', ['pending', 'assigned', 'active', 'upcoming','accepted','rejected', 'completed'])->default('pending');
             $table->unsignedBigInteger('technician_id')->nullable();
             $table->unsignedBigInteger('user_id'); // Customer/User who made the booking
             $table->timestamps();

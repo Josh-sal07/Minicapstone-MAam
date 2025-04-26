@@ -16,38 +16,44 @@ class AdminController extends Controller
         return view('admin.dashboard');
     }
 
-    public function approveTechnician($id)
-    {
-        $application = TechnicianApplication::findOrFail($id);
-        $application->status = 'approved';
-        $application->save();
-
-        // Assign technician role
-        $application->user->assignRole('technician');
-
-        return redirect()->back()->with('success', 'Technician approved.');
-    }
-
-    public function rejectTechnician($id)
-    {
-        $application = TechnicianApplication::findOrFail($id);
-        $application->status = 'rejected';
-        $application->save();
-
-        return redirect()->back()->with('success', 'Technician rejected.');
-    }
+  
     public function pendingTechnicians()
 {
     $applications = TechnicianApplication::where('status', 'pending')->with('user')->get();
     return view('admin.technicians.pending', compact('applications'));
 }
 
-    public function approvedTechnicians()
+public function approveTechnician($id)
 {
-    $technicians = Technician::where('approved', true)->get();
-    return view('admin.technicians.approved', compact('technicians'));
+    $application = TechnicianApplication::findOrFail($id);
+    
+    // Set status to approved
+    $application->status = 'approved';
+    $application->save();
+
+    // Assign technician role to the user
+    $application->user->assignRole('technician');
+
+    // Send notification (optional)
+    $application->user->notify(new TechnicianApprovedNotification($application));
+
+    return redirect()->back()->with('success', 'Technician approved and assigned default password.');
 }
 
+public function rejectTechnician($id)
+{
+    $application = TechnicianApplication::findOrFail($id);
+    $application->status = 'rejected';
+    $application->save();
+
+    return redirect()->back()->with('success', 'Technician rejected.');
+}
+
+public function approvedTechnicians()
+{
+    $technicians = Technician::onlyTrashed()->get(); // Soft deleted
+    return view('admin.technicians.approved', compact('technicians'));
+}
 public function rejectedTechnicians()
 {
     $technicians = Technician::onlyTrashed()->get(); // Soft deleted

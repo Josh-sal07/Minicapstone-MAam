@@ -37,7 +37,7 @@ public function dashboard() {
 
 
  // Show the change password form
- public function showChangePassword()
+ public function changePassword()
  {
      return view('user.account.change-password');
  }
@@ -63,7 +63,7 @@ public function dashboard() {
      $user->password = Hash::make($request->new_password);
      $user->save();
 
-     return redirect()->route('user.profile')->with('success', 'Password updated successfully.');
+     return redirect()->route('user.account')->with('success', 'Password updated successfully.');
  }
  public function update(Request $request)
  {
@@ -111,5 +111,13 @@ public function dashboard() {
 
             return redirect()->route('admin.users')->with('success', 'User deleted successfully.');
         }
+
+        public function showNotifications()
+{
+    $notifications = auth()->user()->notifications; // Retrieve all notifications for the user
+
+    return view('user.notifications.index', compact('notifications'));
+}
+
 
 }

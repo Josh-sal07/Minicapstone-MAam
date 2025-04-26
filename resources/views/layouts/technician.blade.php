@@ -7,6 +7,9 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 </head>
+
+
+
 <body class="bg-gray-50">
     <div class="flex min-h-screen">
         <!-- Sidebar -->
@@ -37,12 +40,7 @@
                                 <span>Upcoming Repairs</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="{{ route('technician.bookings.active') }}" class="flex items-center px-4 py-3 rounded-lg hover:bg-green-700 transition-colors duration-200">
-                                <i class="fas fa-wrench mr-3 w-6 text-center"></i>
-                                <span>Active Repairs</span>
-                            </a>
-                        </li>
+                    
                         <li>
                             <a href="{{ route('technician.bookings.completed') }}" class="flex items-center px-4 py-3 rounded-lg hover:bg-green-700 transition-colors duration-200">
                                 <i class="fas fa-check-circle mr-3 w-6 text-center"></i>
@@ -55,12 +53,7 @@
                                 <span>Notifications</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="{{ route('technician.messages') }}" class="flex items-center px-4 py-3 rounded-lg hover:bg-green-700 transition-colors duration-200">
-                                <i class="fas fa-envelope mr-3 w-6 text-center"></i>
-                                <span>Messages</span>
-                            </a>
-                        </li>
+                       
                         <li>
                             <a href="{{ route('technician.profile') }}" class="flex items-center px-4 py-3 rounded-lg hover:bg-green-700 transition-colors duration-200">
                                 <i class="fas fa-user-circle mr-3 w-6 text-center"></i>
@@ -110,6 +103,12 @@
             <!-- Main Content -->
             <main class="p-8">
                 @yield('content')
+                @if(session('success'))
+    <div class="bg-green-100 text-green-800 p-2 rounded mb-4">
+        {{ session('success') }}
+    </div>
+@endif
+
             </main>
         </div>
     </div>

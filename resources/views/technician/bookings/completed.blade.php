@@ -1,52 +1,35 @@
 @extends('layouts.technician')
-@section('header','Completed Repairs')
+
+@section('header', 'Completed Repairs')
 
 @section('content')
-   {{-- your foreach loop here --}}
-   @foreach($bookings as $booking)
-    <div class="card mb-3 p-3">
-        <p><strong>User:</strong> {{ $booking->user->name }}</p>
-        <p><strong>Issue:</strong> {{ $booking->issue }}</p>
-        <p><strong>Status:</strong> {{ $booking->status }}</p>
-        <p><strong>Completed At:</strong> {{ $booking->updated_at->format('M d, Y h:i A') }}</p>
+    <h1 class="text-2xl font-bold mb-4">Completed Repairs</h1>
 
-        <!-- Message Button -->
-        <button class="btn btn-sm btn-primary" onclick="toggleChat({{ $booking->user->id }})">
-            Message User
-        </button>
-
-        <!-- Chat Box -->
-        <div id="chat-{{ $booking->user->id }}" class="chat-box mt-3" style="display:none; border: 1px solid #ccc; padding: 10px;">
-            <div class="messages" style="max-height: 200px; overflow-y: scroll;">
-                @php
-                    $messages = \App\Models\Message::where(function ($q) use ($booking) {
-                        $q->where('sender_id', auth()->id())
-                          ->where('receiver_id', $booking->user->id);
-                    })->orWhere(function ($q) use ($booking) {
-                        $q->where('sender_id', $booking->user->id)
-                          ->where('receiver_id', auth()->id());
-                    })->orderBy('created_at')->get();
-                @endphp
-
-                @foreach($messages as $msg)
-                    <div style="text-align: {{ $msg->sender_id === auth()->id() ? 'right' : 'left' }}">
-                        <p><strong>{{ $msg->sender->name }}:</strong> {{ $msg->message }}</p>
-                        <small>{{ $msg->created_at->diffForHumans() }}</small>
-                    </div>
-                    <hr>
-                @endforeach
-            </div>
-
-            <!-- Message Form -->
-            <form method="POST" action="{{ route('messages.send') }}">
-                @csrf
-                <input type="hidden" name="receiver_id" value="{{ $booking->user->id }}">
-                <textarea name="message" rows="2" class="form-control mt-2" required></textarea>
-                <button type="submit" class="btn btn-success btn-sm mt-1">Send</button>
-            </form>
+    @if($bookings->count())
+        <div class="bg-white p-4 shadow rounded">
+            <table class="table-auto w-full border">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="p-2">User</th>
+                        <th class="p-2">Device</th>
+                        <th class="p-2">Issue</th>
+                        <th class="p-2">Completed On</th>
+                       
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($bookings as $booking)
+                        <tr class="border-t">
+                            <td class="p-2">{{ $booking->user->name }}</td>
+                            <td class="p-2">{{ $booking->device }}</td>
+                            <td class="p-2">{{ $booking->issue }}</td>
+                            <td class="p-2">{{ $booking->updated_at->diffForHumans() }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
-    </div>
-@endforeach
+    @else
+        <p class="text-gray-500">No completed repairs at the moment.</p>
+    @endif
 @endsection
-
-

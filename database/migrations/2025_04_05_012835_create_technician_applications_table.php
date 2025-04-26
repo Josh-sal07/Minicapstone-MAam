@@ -14,10 +14,13 @@ return new class extends Migration
         Schema::create('technician_applications', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
+            $table->string('skills');
             $table->text('qualifications');
             $table->string('status')->default('pending'); // statuses: pending, approved, rejected
             $table->timestamps();
-
+            $table->timestamp('approved_at')->nullable();
+            $table->timestamp('rejected_at')->nullable();
+            $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }

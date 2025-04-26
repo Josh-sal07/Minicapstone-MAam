@@ -18,7 +18,7 @@
             <tr class="border-t">
                 <td class="py-2 px-4">{{ $application->user->name }}</td>
                 <td class="py-2 px-4">{{ $application->user->email }}</td>
-                <td class="py-2 px-4">{{ $application->qualifications }}</td>
+                <td class="py-2 px-4">{{ $application->skills }}</td>
                 <td class="py-2 px-4">
                     @if($application->status == 'pending')
                     <form action="{{ route('admin.technicians.approve', $application->id) }}" method="POST" class="inline-block">
@@ -37,3 +37,4 @@
     </tbody>
 </table>
 @endsection
+    
